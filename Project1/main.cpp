@@ -235,6 +235,9 @@ void sendMessage(int index)
 	if (request.method == "GET") {
 		doGet(request, response);
 	}
+	else if (request.method == "TRACE") {
+		doTrace(request, response);
+	}
 	
 	bytesSent = send(msgSocket, response.c_str(), response.length(), 0);
 	if (SOCKET_ERROR == bytesSent)
