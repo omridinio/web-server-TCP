@@ -38,4 +38,5 @@ struct SocketState
 void pharse(string message, Request& request);
 void parseQueryParmetrs(string url, Request& request);
 void doGet(Request request, string& response);
+void doHead(Request request, string& response);
 string htmlToString(string fileName);
