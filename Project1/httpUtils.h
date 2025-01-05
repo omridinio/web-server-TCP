@@ -43,3 +43,5 @@ string htmlToString(string fileName);
 void doTrace(Request request, string& response);
 void doHead(Request request, string& response);
 string htmlToString(string fileName);
+void doDelete(Request request, string& response);
+void doOptions(Request request, string& response);

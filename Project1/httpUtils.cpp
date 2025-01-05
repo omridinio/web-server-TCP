@@ -58,23 +58,6 @@ void doGet(Request request, string& response) {
 	response = htmlToString(nameFile);
 }
 
-//string htmlToString(string fileName) {
-//	string file_path = "C:\\temp\\" + fileName;
-//	ifstream file(file_path);
-//	if (!file.is_open()) {
-//		return "<html><body><h1>404 Not Found</h1></body></html>";
-//	}
-//	ostringstream content;
-//	content << file.rdbuf();
-//	std::ostringstream response_stream;
-//	response_stream << "HTTP/1.1 200 OK\r\n"
-//		<< "Content-Type: text/html\r\n"
-//		<< "Content-Length: " << content.str().size() << "\r\n"
-//		<< "\r\n"
-//		<< content.str();
-//	return response_stream.str();
-//}
-
 string createStatusLine(int statusCode) {
 	string statusLine = "HTTP/1.1 ";
 	switch (statusCode) {
@@ -152,5 +135,33 @@ void doHead(Request request, string& response) {
 	nameFile += langSet.find(lang) != langSet.end() ? lang : "en";
 	nameFile += ".html";
 	response = createResponseHeader(nameFile, "text/html");
+}
+
+void doDelete(Request request, string& response) {
+	if (request.url != "/index.html") {
+		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
+		return;
+	}
+	string lang = request.queryParams["lang"];
+	string nameFile = "index-";
+	set <string> langSet = { "en", "fr", "he" };
+	nameFile += langSet.find(lang) != langSet.end() ? lang : "en";
+	nameFile += ".html";
+	string file_path = "C:\\temp\\" + nameFile;
+	if (remove(file_path.c_str()) != 0) {
+		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
+	}
+	else {
+		response = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK";
+	}
+}
+
+void doOptions(Request request, string& response) {
+	response = "HTTP/1.1 200 OK\r\n";
+	string allow = "Allow: TRACE, OPTIONS, PUT, POST";
+	if (request.url == "/index.html" || request.url == "*") {
+		allow += ", DELETE, HEAD, GET";
+	}
+	response += allow + "\r\n Content-Length: 0";
 }
 
