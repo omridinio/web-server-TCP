@@ -13,6 +13,7 @@ using namespace std;
 #include <set>
 #include <fstream>
 
+
 struct Request {
 	string method;
 	string url;
@@ -43,3 +44,5 @@ string htmlToString(string fileName);
 void doTrace(Request request, string& response);
 void doHead(Request request, string& response);
 string htmlToString(string fileName);
+void doPut(Request request, string& response);
+int writeToFile(string fileName, string content);

@@ -46,40 +46,24 @@ void parseQueryParmetrs(string url, Request& request)
 }
 
 void doGet(Request request, string& response) {
-	if (request.url != "/index.html") {
-		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
-		return;
-	}
+	string nameFile;
 	string lang = request.queryParams["lang"];
-	string nameFile = "index-";
 	set <string> langSet = { "en", "fr", "he"};
-	nameFile += langSet.find(lang) != langSet.end() ? lang : "en";
-	nameFile += ".html";
+	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
+	
+	nameFile = selectedLang + "\\" + request.url.substr(1);
+
 	response = htmlToString(nameFile);
 }
-
-//string htmlToString(string fileName) {
-//	string file_path = "C:\\temp\\" + fileName;
-//	ifstream file(file_path);
-//	if (!file.is_open()) {
-//		return "<html><body><h1>404 Not Found</h1></body></html>";
-//	}
-//	ostringstream content;
-//	content << file.rdbuf();
-//	std::ostringstream response_stream;
-//	response_stream << "HTTP/1.1 200 OK\r\n"
-//		<< "Content-Type: text/html\r\n"
-//		<< "Content-Length: " << content.str().size() << "\r\n"
-//		<< "\r\n"
-//		<< content.str();
-//	return response_stream.str();
-//}
 
 string createStatusLine(int statusCode) {
 	string statusLine = "HTTP/1.1 ";
 	switch (statusCode) {
 	case 200:
 		statusLine += "200 OK";
+		break;
+	case 201:
+		statusLine += "201 Created";
 		break;
 	case 404:
 		statusLine += "404 Not Found";
@@ -91,45 +75,36 @@ string createStatusLine(int statusCode) {
 	return statusLine;
 }
 
-string createResponseHeader(string fileName, string contentType) {
-	string file_path = "C:\\temp\\" + fileName;
-	ifstream file(file_path);
-	int statusCode;
-	ostringstream content;
-	
-	if (!file.is_open()) {
-		statusCode = 404;
-		content << "<html><body><h1>404 Not Found</h1></body></html>";
-	}
-	else {
-		statusCode = 200;
-		content << file.rdbuf();
-	}
-
+string createResponseHeader(int status, string fileName, string contentType,int contentLength) {
 	std::ostringstream response_stream;
-	response_stream << createStatusLine(statusCode) << "\r\n"
+	response_stream << createStatusLine(status) << "\r\n"
 	<< "Content-Type: " << contentType << "\r\n"
-	<< "Content-Length: " << content.str().size() << "\r\n"
+	<< "Content-Length: " << contentLength << "\r\n"
 	<< "\r\n";
 	return response_stream.str();
 }
 
-string createBody(string fileName) {
+string createBody(string fileName, int& status) {
 	string file_path = "C:\\temp\\" + fileName;
 	ifstream file(file_path);
 	if (!file.is_open()) {
+		status = 404;
 		return "<html><body><h1>404 Not Found</h1></body></html>";
 	}
+	status = 200;
 	ostringstream content;
 	content << file.rdbuf();
 	return content.str();
 }
 
 string htmlToString(string fileName) {
-	string response = createResponseHeader(fileName,"text/html");
-	response += createBody(fileName);
+	int statusCode;
+	string body = createBody(fileName , statusCode);
+	string response = createResponseHeader(statusCode ,fileName, "text/html", body.size());
+	response += body;
 	return response;
 }
+
 void doTrace(Request request, string& response) {
 	ostringstream stream;
 	stream << "HTTP/1.1 200 OK\r\n"
@@ -140,17 +115,41 @@ void doTrace(Request request, string& response) {
 	response = stream.str();
 }
 
-
 void doHead(Request request, string& response) {
-	if (request.url != "/index.html") {
-		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
-		return;
-	}
+	string nameFile;
+	int statusCode;
 	string lang = request.queryParams["lang"];
-	string nameFile = "index-";
 	set <string> langSet = { "en", "fr", "he" };
-	nameFile += langSet.find(lang) != langSet.end() ? lang : "en";
-	nameFile += ".html";
-	response = createResponseHeader(nameFile, "text/html");
+	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
+	nameFile = selectedLang + "\\" + request.url.substr(1);
+	string body = createBody(nameFile, statusCode);
+	response = createResponseHeader(statusCode, nameFile, "text/html", body.size());
 }
 
+void doPut(Request request, string& response) {
+	string nameFile;
+	int statusCode;
+	string lang = request.queryParams["lang"];
+	set <string> langSet = { "en", "fr", "he" };
+	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
+	nameFile = selectedLang + "\\" + request.url.substr(1);
+	statusCode = writeToFile(nameFile, request.body);
+	response = createResponseHeader(statusCode, nameFile, "text/html",0);
+}
+
+int writeToFile(string fileName, string content) {
+	string file_path = "C:\\temp\\" + fileName;
+	int status = 201;
+	ifstream infile(file_path);
+	//check if file exists
+	if (infile.good()) {
+		//file exists so we need to update it
+		status = 200;
+	}
+	infile.close();
+	//open the file in append mode 
+	ofstream file(file_path, ios::app);
+	file << content;
+	file.close();
+	return status;
+}

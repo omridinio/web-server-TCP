@@ -241,6 +241,9 @@ void sendMessage(int index)
 	else if (request.method == "HEAD") {
 		doHead(request, response);
 	}
+	else if (request.method == "PUT") {
+		doPut(request,response);
+	}
 	
 	bytesSent = send(msgSocket, response.c_str(), response.length(), 0);
 	if (SOCKET_ERROR == bytesSent)
