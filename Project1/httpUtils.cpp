@@ -158,10 +158,17 @@ void doDelete(Request request, string& response) {
 
 void doOptions(Request request, string& response) {
 	response = "HTTP/1.1 200 OK\r\n";
+	string body = "";
 	string allow = "Allow: TRACE, OPTIONS, PUT, POST";
-	if (request.url == "/index.html" || request.url == "*") {
+	string contentLength = "0";
+	if (request.url == "/index.html" || request.url == "/*") {
 		allow += ", DELETE, HEAD, GET";
+		if (request.url == "/index.html")
+			body = "description: For this resource, you can add query parameters 'lang' which specifies the language in which the page will be displayed. The server supports Hebrew, English, and French. For the values: he, fr, en Otherwise, the page will be displayed by default in English.";
 	}
-	response += allow + "\r\n Content-Length: 0";
+	contentLength = to_string(body.size());
+	allow += "\r\n";
+	response += allow + "Content-Length: " + contentLength + "\r\n\r\n" + body;
+	
 }
 
