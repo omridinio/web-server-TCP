@@ -23,8 +23,11 @@ void pharse(string message, Request& request)
 	else {
 		request.url = words[1];
 	}
-
-	size_t pos = message.find("\r\n\r\n");
+	size_t pos = message.find("Content-Type: ");
+	if (pos != string::npos) {
+		request.contentType = message.substr(pos + 14, message.find("\r\n", pos) - pos - 14);
+	}
+	pos = message.find("\r\n\r\n");
 	if (pos != string::npos) {
 		request.body = message.substr(pos + 4);
 	}
@@ -71,7 +74,11 @@ string createStatusLine(int statusCode) {
 	case 500:
 		statusLine += "500 Internal Server Error";
 		break;
+	case 409:
+		statusLine += "409 Conflict";
+		break;
 	}
+
 	return statusLine;
 }
 
@@ -134,7 +141,7 @@ void doPut(Request request, string& response) {
 	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
 	nameFile = selectedLang + "\\" + request.url.substr(1);
 	statusCode = writeToFile(nameFile, request.body);
-	response = createResponseHeader(statusCode, nameFile, "text/html",0);
+	response = createResponseHeader(statusCode, nameFile, request.contentType ,0);
 }
 
 int writeToFile(string fileName, string content) {
@@ -153,3 +160,4 @@ int writeToFile(string fileName, string content) {
 	file.close();
 	return status;
 }
+
