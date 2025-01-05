@@ -143,11 +143,10 @@ void doDelete(Request request, string& response) {
 		return;
 	}
 	string lang = request.queryParams["lang"];
-	string nameFile = "index-";
+	string nameFile = "index.html";
 	set <string> langSet = { "en", "fr", "he" };
-	nameFile += langSet.find(lang) != langSet.end() ? lang : "en";
-	nameFile += ".html";
-	string file_path = "C:\\temp\\" + nameFile;
+	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
+	string file_path = "C:\\temp\\" + nameDic + "\\" + nameFile;
 	if (remove(file_path.c_str()) != 0) {
 		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
 	}
