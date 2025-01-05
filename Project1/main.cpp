@@ -235,6 +235,9 @@ void sendMessage(int index)
 	if (request.method == "GET") {
 		doGet(request, response);
 	}
+	else if (request.method == "TRACE") {
+		doTrace(request, response);
+	}
 	else if (request.method == "HEAD") {
 		doHead(request, response);
 	}

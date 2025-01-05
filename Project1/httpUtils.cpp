@@ -11,6 +11,8 @@ void pharse(string message, Request& request)
 		words.push_back(currWord);
 	}
 	request.method = words[0];
+	if (request.method == "TRACE")
+		request.allMessage = message;
 	istringstream secondStream(words[1]);
 	string queryParams;
 	if (secondStream.str().find('?') != string::npos) {
@@ -128,6 +130,16 @@ string htmlToString(string fileName) {
 	response += createBody(fileName);
 	return response;
 }
+void doTrace(Request request, string& response) {
+	ostringstream stream;
+	stream << "HTTP/1.1 200 OK\r\n"
+		<< "Content-Type: message/http\r\n"
+		<< "content-length: " << request.allMessage.size() << "\r\n"
+		<< "\r\n"
+		<< request.allMessage;
+	response = stream.str();
+}
+
 
 void doHead(Request request, string& response) {
 	if (request.url != "/index.html") {

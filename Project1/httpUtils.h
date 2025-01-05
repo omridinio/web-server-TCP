@@ -21,6 +21,7 @@ struct Request {
 	string contentLength;
 	string body;
 	unordered_map<string, string> queryParams;
+	string allMessage; //need this for TRACE
 };
 
 struct SocketState
@@ -38,5 +39,7 @@ struct SocketState
 void pharse(string message, Request& request);
 void parseQueryParmetrs(string url, Request& request);
 void doGet(Request request, string& response);
+string htmlToString(string fileName);
+void doTrace(Request request, string& response);
 void doHead(Request request, string& response);
 string htmlToString(string fileName);
