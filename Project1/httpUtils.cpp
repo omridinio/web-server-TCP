@@ -138,16 +138,12 @@ void doHead(Request request, string& response) {
 }
 
 void doDelete(Request request, string& response) {
-	if (request.url != "/index.html") {
-		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
-		return;
-	}
 	string lang = request.queryParams["lang"];
-	string nameFile = "index.html";
+	string nameFile = request.url.substr(1);
 	set <string> langSet = { "en", "fr", "he" };
 	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
-	string file_path = "C:\\temp\\" + nameDic + "\\" + nameFile;
-	if (remove(file_path.c_str()) != 0) {
+	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
+	if (remove(filePath.c_str()) != 0) {
 		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
 	}
 	else {
@@ -160,7 +156,13 @@ void doOptions(Request request, string& response) {
 	string body = "";
 	string allow = "Allow: TRACE, OPTIONS, PUT, POST";
 	string contentLength = "0";
-	if (request.url == "/index.html" || request.url == "/*") {
+	string lang = request.queryParams["lang"];
+	string nameFile = request.url.substr(1);
+	set <string> langSet = { "en", "fr", "he" };
+	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
+	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
+	ifstream file(filePath);
+	if (file.good() || request.url == "/*") {
 		allow += ", DELETE, HEAD, GET";
 		if (request.url == "/index.html")
 			body = "description: For this resource, you can add query parameters 'lang' which specifies the language in which the page will be displayed. The server supports Hebrew, English, and French. For the values: he, fr, en Otherwise, the page will be displayed by default in English.";
