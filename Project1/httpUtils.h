@@ -45,3 +45,4 @@ void doHead(Request request, string& response);
 string htmlToString(string fileName);
 void doDelete(Request request, string& response);
 void doOptions(Request request, string& response);
+void doPost(Request request, string& response);
