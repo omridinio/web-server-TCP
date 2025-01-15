@@ -161,3 +161,32 @@ int writeToFile(string fileName, string content) {
 	return status;
 }
 
+void doPost(Request request, string& response) {
+	string nameFile;
+	int statusCode;
+	string lang = request.queryParams["lang"];
+	set <string> langSet = { "en", "fr", "he" };
+	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
+	nameFile = selectedLang + "\\" + request.url.substr(1);
+	statusCode = createNewObject(nameFile, request.body);
+	response = createResponseHeader(statusCode, nameFile, request.contentType, 0);
+}
+
+int createNewObject(string fileName, string content) {
+	string file_path = "C:\\temp\\" + fileName;
+	int status = 201;
+	ifstream infile(file_path);
+	//check if file exists
+	if (infile.good()) {
+		//file exists so is bad request
+		status = 409;
+		infile.close();
+		return;
+	}
+	infile.close();
+	//open the file in append mode 
+	ofstream file(file_path);
+	file << content;
+	file.close();
+	return status;
+}
