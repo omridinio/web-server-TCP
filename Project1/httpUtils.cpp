@@ -161,16 +161,16 @@ int writeToFile(string fileName, string content) {
 	return status;
 }
 
-void doPost(Request request, string& response) {
-	string nameFile;
-	int statusCode;
-	string lang = request.queryParams["lang"];
-	set <string> langSet = { "en", "fr", "he" };
-	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
-	nameFile = selectedLang + "\\" + request.url.substr(1);
-	statusCode = createNewObject(nameFile, request.body);
-	response = createResponseHeader(statusCode, nameFile, request.contentType, 0);
-}
+//void doPost(Request request, string& response) {
+//	string nameFile;
+//	int statusCode;
+//	string lang = request.queryParams["lang"];
+//	set <string> langSet = { "en", "fr", "he" };
+//	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
+//	nameFile = selectedLang + "\\" + request.url.substr(1);
+//	statusCode = createNewObject(nameFile, request.body);
+//	response = createResponseHeader(statusCode, nameFile, request.contentType, 0);
+//}
 
 void doDelete(Request request, string& response) {
 	string lang = request.queryParams["lang"];
