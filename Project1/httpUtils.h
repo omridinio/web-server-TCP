@@ -39,14 +39,13 @@ struct SocketState
 
 void pharse(string message, Request& request);
 void parseQueryParmetrs(string url, Request& request);
-void doGet(Request request, string& response);
 string htmlToString(string fileName);
+void doGet(Request request, string& response);
 void doTrace(Request request, string& response);
 void doHead(Request request, string& response);
-string htmlToString(string fileName);
 void doPut(Request request, string& response);
-int writeToFile(string fileName, string content);
-string htmlToString(string fileName);
 void doDelete(Request request, string& response);
 void doOptions(Request request, string& response);
 void doPost(Request request, string& response);
+int createNewObject(string fileName, string content);
+int writeToFile(string fileName, string content);

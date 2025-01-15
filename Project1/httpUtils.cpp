@@ -233,21 +233,21 @@ void doPost(Request request, string& response) {
 	}	
 }
 
-int createNewObject(string fileName, string content) {
-	string file_path = "C:\\temp\\" + fileName;
-	int status = 201;
-	ifstream infile(file_path);
-	//check if file exists
-	if (infile.good()) {
-		//file exists so is bad request
-		status = 409;
-		infile.close();
-		return;
-	}
-	infile.close();
-	//open the file in append mode 
-	ofstream file(file_path);
-	file << content;
-	file.close();
-	return status;
-}
+//int createNewObject(string fileName, string content) {
+//	string file_path = "C:\\temp\\" + fileName;
+//	int status = 201;
+//	ifstream infile(file_path);
+//	//check if file exists
+//	if (infile.good()) {
+//		//file exists so is bad request
+//		status = 409;
+//		infile.close();
+//		return;
+//	}
+//	infile.close();
+//	//open the file in append mode 
+//	ofstream file(file_path);
+//	file << content;
+//	file.close();
+//	return status;
+//}
