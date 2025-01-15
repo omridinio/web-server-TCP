@@ -172,6 +172,67 @@ void doPost(Request request, string& response) {
 	response = createResponseHeader(statusCode, nameFile, request.contentType, 0);
 }
 
+void doDelete(Request request, string& response) {
+	string lang = request.queryParams["lang"];
+	string nameFile = request.url.substr(1);
+	set <string> langSet = { "en", "fr", "he" };
+	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
+	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
+	if (remove(filePath.c_str()) != 0) {
+		response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
+	}
+	else {
+		response = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK";
+	}
+}
+
+void doOptions(Request request, string& response) {
+	response = "HTTP/1.1 200 OK\r\n";
+	string body = "";
+	string allow = "Allow: TRACE, OPTIONS, PUT, POST";
+	string contentLength = "0";
+	string lang = request.queryParams["lang"];
+	string nameFile = request.url.substr(1);
+	set <string> langSet = { "en", "fr", "he" };
+	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
+	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
+	ifstream file(filePath);
+	if (file.good() || request.url == "/*") {
+		allow += ", DELETE, HEAD, GET";
+		if (request.url == "/index.html")
+			body = "description: For this resource, you can add query parameters 'lang' which specifies the language in which the page will be displayed. The server supports Hebrew, English, and French. For the values: he, fr, en Otherwise, the page will be displayed by default in English.";
+	}
+	contentLength = to_string(body.size());
+	allow += "\r\n";
+	response += allow + "Content-Length: " + contentLength + "\r\n\r\n" + body;
+}
+
+void doPost(Request request, string& response) {
+	//check if exist
+	string lang = request.queryParams["lang"];
+	string nameFile = request.url.substr(1);
+	set <string> langSet = { "en", "fr", "he" };
+	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
+	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
+	ifstream file(filePath);
+	if (file.good()) {
+		response = "HTTP/1.1 409 Conflict\r\nContent-Length: 9\r\n\r\nConflict";
+		return;
+	}
+	file.close();
+	cout << "\n" + request.body + "\n";
+	//create file
+	ofstream newFile(filePath);
+	if (newFile.is_open()) {
+		newFile << request.body;
+		newFile.close();
+		response = "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n";
+	}
+	else {
+		response = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 24\r\n\r\nFailed to create file";
+	}	
+}
+
 int createNewObject(string fileName, string content) {
 	string file_path = "C:\\temp\\" + fileName;
 	int status = 201;
