@@ -49,3 +49,4 @@ void doOptions(Request request, string& response);
 void doPost(Request request, string& response);
 
 int writeToFile(string fileName, string content);
+int createNewObject(string fileName, string content);
