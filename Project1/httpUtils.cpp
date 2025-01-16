@@ -15,6 +15,7 @@ void pharse(string message, Request& request)
 		request.allMessage = message;
 	istringstream secondStream(words[1]);
 	string queryParams;
+	request.queryParams = unordered_map<string, string>();
 	if (secondStream.str().find('?') != string::npos) {
 		std::getline(secondStream, request.url, '?');
 		std::getline(secondStream, queryParams, '?');
@@ -38,8 +39,7 @@ void pharse(string message, Request& request)
 
 void parseQueryParmetrs(string url, Request& request)
 {
-	if (url.empty())
-		request.queryParams = unordered_map<string, string>();
+	
 	istringstream stream(url);
 	string currWord;
 	vector<string> words;
@@ -196,31 +196,6 @@ void doOptions(Request request, string& response) {
 	response += allow + "Content-Length: " + contentLength + "\r\n\r\n" + body;
 }
 
-//void doPost(Request request, string& response) {
-//	//check if exist
-//	string lang = request.queryParams["lang"];
-//	string nameFile = request.url.substr(1);
-//	set <string> langSet = { "en", "fr", "he" };
-//	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
-//	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
-//	ifstream file(filePath);
-//	if (file.good()) {
-//		response = "HTTP/1.1 409 Conflict\r\nContent-Length: 9\r\n\r\nConflict";
-//		return;
-//	}
-//	file.close();
-//	cout << "\n" + request.body + "\n";
-//	//create file
-//	ofstream newFile(filePath);
-//	if (newFile.is_open()) {
-//		newFile << request.body;
-//		newFile.close();
-//		response = "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n";
-//	}
-//	else {
-//		response = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 24\r\n\r\nFailed to create file";
-//	}	
-//}
 
 void doPost(Request request, string& response) {
 	//check if exist
