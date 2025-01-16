@@ -53,3 +53,5 @@ void doPut(Request request, string& response);
 int writeToFile(string fileName, string content);
 int createNewObject(string fileName, string content);
 int writeToFile(string fileName, string content);
+
+int createNewObject(string fileName, string content);

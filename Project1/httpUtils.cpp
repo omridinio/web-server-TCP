@@ -161,17 +161,6 @@ int writeToFile(string fileName, string content) {
 	return status;
 }
 
-//void doPost(Request request, string& response) {
-//	string nameFile;
-//	int statusCode;
-//	string lang = request.queryParams["lang"];
-//	set <string> langSet = { "en", "fr", "he" };
-//	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
-//	nameFile = selectedLang + "\\" + request.url.substr(1);
-//	statusCode = createNewObject(nameFile, request.body);
-//	response = createResponseHeader(statusCode, nameFile, request.contentType, 0);
-//}
-
 void doDelete(Request request, string& response) {
 	string lang = request.queryParams["lang"];
 	string nameFile = request.url.substr(1);
@@ -207,47 +196,60 @@ void doOptions(Request request, string& response) {
 	response += allow + "Content-Length: " + contentLength + "\r\n\r\n" + body;
 }
 
+//void doPost(Request request, string& response) {
+//	//check if exist
+//	string lang = request.queryParams["lang"];
+//	string nameFile = request.url.substr(1);
+//	set <string> langSet = { "en", "fr", "he" };
+//	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
+//	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
+//	ifstream file(filePath);
+//	if (file.good()) {
+//		response = "HTTP/1.1 409 Conflict\r\nContent-Length: 9\r\n\r\nConflict";
+//		return;
+//	}
+//	file.close();
+//	cout << "\n" + request.body + "\n";
+//	//create file
+//	ofstream newFile(filePath);
+//	if (newFile.is_open()) {
+//		newFile << request.body;
+//		newFile.close();
+//		response = "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n";
+//	}
+//	else {
+//		response = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 24\r\n\r\nFailed to create file";
+//	}	
+//}
+
 void doPost(Request request, string& response) {
 	//check if exist
 	string lang = request.queryParams["lang"];
-	string nameFile = request.url.substr(1);
+	string nameFile;
+	int statusCode;
 	set <string> langSet = { "en", "fr", "he" };
-	string nameDic = langSet.find(lang) != langSet.end() ? lang : "en";
-	string filePath = "C:\\temp\\" + nameDic + "\\" + nameFile;
-	ifstream file(filePath);
-	if (file.good()) {
-		response = "HTTP/1.1 409 Conflict\r\nContent-Length: 9\r\n\r\nConflict";
-		return;
-	}
-	file.close();
-	cout << "\n" + request.body + "\n";
-	//create file
-	ofstream newFile(filePath);
-	if (newFile.is_open()) {
-		newFile << request.body;
-		newFile.close();
-		response = "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n";
-	}
-	else {
-		response = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 24\r\n\r\nFailed to create file";
-	}	
-}
+	string selectedLang = langSet.find(lang) != langSet.end() ? lang : "en";
 
-//int createNewObject(string fileName, string content) {
-//	string file_path = "C:\\temp\\" + fileName;
-//	int status = 201;
-//	ifstream infile(file_path);
-//	//check if file exists
-//	if (infile.good()) {
-//		//file exists so is bad request
-//		status = 409;
-//		infile.close();
-//		return;
-//	}
-//	infile.close();
-//	//open the file in append mode 
-//	ofstream file(file_path);
-//	file << content;
-//	file.close();
-//	return status;
-//}
+	nameFile = selectedLang + "\\" + request.url.substr(1);
+	statusCode = createNewObject(nameFile, request.body);
+	response = createResponseHeader(statusCode, nameFile, request.contentType, 0);
+}
+ 
+int createNewObject(string fileName, string content) {
+	string file_path = "C:\\temp\\" + fileName;
+	int status = 201;
+	ifstream infile(file_path);
+	//check if file exists
+	if (infile.good()) {
+		//file exists so is bad request
+		status = 409;
+		infile.close();
+		return status;
+	}
+	infile.close();
+	//open the file in append mode 
+	ofstream file(file_path);
+	file << content;
+	file.close();
+	return status;
+}
