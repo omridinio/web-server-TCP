@@ -244,6 +244,9 @@ void sendMessage(int index)
 	else if (request.method == "PUT") {
 		doPut(request,response);
 	}
+	else if (request.method == "POST") {
+		doPost(request, response);
+	}
 	
 	else if (request.method == "DELETE") {
 		doDelete(request, response);
