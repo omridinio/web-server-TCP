@@ -34,6 +34,8 @@ struct SocketState
 	vector<string> buffer;
 	int numOfMes;
 	Request request;
+	time_t timeRecive;
+
 };
 
 

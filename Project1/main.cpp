@@ -8,6 +8,7 @@ const int LISTEN = 1;
 const int RECEIVE = 2;
 const int IDLE = 3;
 const int SEND = 4;
+const int MAX_TIME = 120;
 
 bool addSocket(SOCKET id, int what);
 void removeSocket(int index);
@@ -89,6 +90,8 @@ void main()
 			return;
 		}
 
+
+
 		for (int i = 0; i < MAX_SOCKETS && nfd > 0; i++)
 		{
 			if (FD_ISSET(sockets[i].id, &waitRecv))
@@ -115,8 +118,19 @@ void main()
 				switch (sockets[i].send)
 				{
 				case SEND:
-					sendMessage(i);
-					break;
+					time_t currTime;
+					time(&currTime);
+					if (difftime(currTime, sockets[i].timeRecive) > MAX_TIME)
+					{
+						cout << "Time Server: Connection with client " << i << " is closed due to inactivity.\n";
+						closesocket(sockets[i].id);
+						removeSocket(i);
+						break;
+					}
+					else {
+						sendMessage(i);
+						break;
+					}
 				}
 			}
 		}
@@ -206,8 +220,8 @@ void receiveMessage(int index)
 	{
 		buffer[bytesRecv] = '\0'; //add the null-terminating to make it a string
 		sockets[index].buffer.push_back(buffer);
+		time(&sockets[index].timeRecive);
 		cout << "Time Server: Recieved: " << bytesRecv << " bytes of \"" << sockets[index].buffer.back() << "\" message.\n";
-
 		sockets[index].numOfMes++;
 
 		if (sockets[index].numOfMes > 0)
@@ -253,6 +267,12 @@ void sendMessage(int index)
 	}
 	else if (request.method == "OPTIONS") {
 		doOptions(request, response);
+	}
+	else {
+		response = "HTTP/1.1 501 Not Implemented\r\n";
+		response += "Content-Type: text/html\r\n";
+		response += "Content-Length: 0\r\n";
+		response += "\r\n";
 	}
 	bytesSent = send(msgSocket, response.c_str(), response.length(), 0);
 	if (SOCKET_ERROR == bytesSent)

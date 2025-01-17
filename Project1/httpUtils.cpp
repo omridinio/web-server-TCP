@@ -39,7 +39,6 @@ void pharse(string message, Request& request)
 
 void parseQueryParmetrs(string url, Request& request)
 {
-	
 	istringstream stream(url);
 	string currWord;
 	vector<string> words;
